@@ -179,6 +179,7 @@ def play_blackjack():
         print("Dealer and player split the pot.")
     else:
         print("You win!!")
+    print("\n")
     time.sleep(2)
     inp = input("Play again? (y/n)\n > ")
     if inp.lower() == "y":
@@ -215,7 +216,8 @@ def card_value(card,total):
         
     
     
-    
+############
+############
 
 init()
 
