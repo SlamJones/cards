@@ -6,3 +6,4 @@ Current feature list:
 - Create a deck of cards based on suite and numbers
 - Pick a card at random
 - Play BlackJack against your pc
+- Play War against your pc
