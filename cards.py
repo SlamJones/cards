@@ -30,7 +30,7 @@ def menu():
     while inp.lower() != "q":
         clearscreen()
         print("\nCards.py\nMain Menu\n")
-        inp = input(" (Q)uit\n\n (P)lay Blackjack\n\n (B)uild new deck\n (S)how cards\n (R)andom card\n\n > ")
+        inp = input(" (Q)uit\n\n (P)lay Blackjack\n Play (W)ar\n\n (B)uild new deck\n (S)how cards\n (R)andom card\n\n > ")
         if inp.lower() == "b":
             build_new_deck()
         elif inp.lower() == "s":
@@ -41,6 +41,8 @@ def menu():
             time.sleep(1)
         elif inp.lower() == "p":
             play_blackjack()
+        elif inp.lower() == "w":
+            play_war()
             
             
 def farewell():
@@ -115,7 +117,7 @@ def play_blackjack():
     while not player_done:
         clearscreen()
         value = 0
-        value = hand_value("player")
+        value = hand_value("player","blackjack")
         #for card in player_hand:
         #    value += card_value(card,value)
         print(player_hand)
@@ -140,7 +142,7 @@ def play_blackjack():
         clearscreen()
         dealer = 0
         draw_card_dealer()
-        dealer = hand_value("dealer")
+        dealer = hand_value("dealer","blackjack")
         #for card in dealer_hand:
         #    dealer += card_value(card,dealer)
         print(dealer_hand)
@@ -187,33 +189,106 @@ def play_blackjack():
     
         
         
-def hand_value(who):
+def hand_value(who,gametype):
     total = 0
     if who == "player":
         for card in player_hand:
-            total += card_value(card,total)
+            total += card_value(card,total,gametype)
         return(total)
     elif who == "dealer":
         for card in dealer_hand:
-            total += card_value(card,total)
+            total += card_value(card,total,gametype)
         return(total)
             
 
     
-def card_value(card,total):
+def card_value(card,total,gametype):
     card_parts = card.split(" ")
     card_no = card_parts[0]
     if card_no.isdigit():
         value = int(card_no)
-    elif card_no == "Ace":
-        if total >= 11:
-            value = 1
+    if gametype == "blackjack":
+        if card_no == "Ace":
+            if total >= 11:
+                value = 1
+            else:
+                value = 11
         else:
+            value = 10
+    elif gametype == "war":
+        if card_no == "Ace":
+            value = 14
+        elif card_no == "King":
+            value = 13
+        elif card_no == "Queen":
+            value = 12
+        elif card_no == "Jack":
             value = 11
-    else:
-        value = 10
     return(value)
+
+
+def transfer_card(card,start,to):
+    if start == "player":
+        player_hand.remove(card)
+        dealer_hand.append(card)
+    elif start == "dealer":
+        dealer_hand.remove(card)
+        player_hand.append(card)
         
+        
+def card_to_back(card,who):
+    if who == "player":
+        player_hand.remove(card)
+        player_hand.append(card)
+    elif who == "dealer":
+        dealer_hand.remove(card)
+        dealer_hand.append(card)
+
+
+def play_war():
+    reset_deck()
+    rounds = 1
+    while len(deck) > 0:
+        draw_card_player()
+        draw_card_dealer()
+    clearscreen()
+    print("Starting War!")
+    time.sleep(1)
+    clearscreen()
+    try:
+        while len(player_hand) > 0 and len(dealer_hand) > 0:
+            print("War\nCtrl+C to Quit\n\nPlaying round {}\nPlayer holds {} cards\nDealer holds {} cards".format(rounds,str(len(player_hand)),str(len(dealer_hand))))
+            time.sleep(1.2)
+            player_played = player_hand[0]
+            dealer_played = dealer_hand[0]
+            print("\nPlayer: {}\nDealer: {}\n".format(player_played,dealer_played))
+            time.sleep(0.85)
+            player_value = card_value(player_played,0,"war")
+            dealer_value = card_value(dealer_played,0,"war")
+            if player_value > dealer_value:
+                print("Player takes the cards!")
+                transfer_card(dealer_played,"dealer","player")
+                card_to_back(player_played,"player")
+            elif player_value < dealer_value:
+                print("Dealer takes the cards!")
+                transfer_card(player_played,"player","dealer")
+                card_to_back(dealer_played,"dealer")
+            elif player_value == dealer_value:
+                print("Stalemate!  You both keep your cards.")
+                card_to_back(dealer_played,"dealer")
+                card_to_back(player_played,"player")
+            time.sleep(2)
+            clearscreen()
+            rounds += 1
+        if len(player_hand) > 0:
+            print("Player wins!")
+        elif len(dealer_hand) > 0:
+            print("Dealer wins!")
+        time.sleep(2)
+    except KeyboardInterrupt:
+        clearscreen()
+        print("Exiting War...\n\nThanks for playing!")
+        time.sleep(2)
     
     
 ############
