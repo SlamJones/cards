@@ -311,6 +311,7 @@ def play_war():
                     except:
                         pass
                         #print("Couldn't transfer {}!".format(str(card)))
+                on_table = []
             elif player_value == dealer_value:
                 print("TO WAR!  Cards will accumulate until one side wins.")
                 on_table.append(dealer_played)
