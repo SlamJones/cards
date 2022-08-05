@@ -243,11 +243,32 @@ def card_to_back(card,who):
     elif who == "dealer":
         dealer_hand.remove(card)
         dealer_hand.append(card)
+        
+        
+def shuffle_hand(who):
+    shuffled = []
+    if who == "player":
+        cards = len(player_hand)
+        while len(player_hand) > 0:
+            random = random.randrange(0,cards)
+            shuffled.append(player_hand[random])
+            player_hand.remove(player_hand[random])
+            cards = len(player_hand)
+        player_hand = shuffled
+    elif who == "dealer":
+        cards = len(dealer_hand)
+        while len(dealer_hand) > 0:
+            random = random.randrange(0,cards)
+            shuffled.append(dealer_hand[random])
+            dealer_hand.remove(dealer_hand[random])
+            cards = len(dealer_hand)
+        dealer_hand = shuffled
 
 
 def play_war():
     reset_deck()
     rounds = 1
+    on_table = []
     while len(deck) > 0:
         draw_card_player()
         draw_card_dealer()
@@ -258,6 +279,10 @@ def play_war():
     try:
         while len(player_hand) > 0 and len(dealer_hand) > 0:
             print("War\nCtrl+C to Quit\n\nPlaying round {}\nPlayer holds {} cards\nDealer holds {} cards".format(rounds,str(len(player_hand)),str(len(dealer_hand))))
+            if len(on_table) > 0:
+                print("\nOn table:")
+                for card in on_table:
+                    print(str(card))
             time.sleep(1.2)
             player_played = player_hand[0]
             dealer_played = dealer_hand[0]
@@ -269,12 +294,28 @@ def play_war():
                 print("Player takes the cards!")
                 transfer_card(dealer_played,"dealer","player")
                 card_to_back(player_played,"player")
+                for card in on_table:
+                    try:
+                        transfer_card(card,"dealer","player")
+                    except:
+                        pass
+                        #print("Couldn't transfer {}!".format(str(card)))
+                on_table = []
             elif player_value < dealer_value:
                 print("Dealer takes the cards!")
                 transfer_card(player_played,"player","dealer")
                 card_to_back(dealer_played,"dealer")
+                for card in on_table:
+                    try:
+                        transfer_card(card,"player","dealer")
+                    except:
+                        pass
+                        #print("Couldn't transfer {}!".format(str(card)))
             elif player_value == dealer_value:
-                print("Stalemate!  You both keep your cards.")
+                print("TO WAR!  Cards will accumulate until one side wins.")
+                on_table.append(dealer_played)
+                on_table.append(player_played)
+                #print("Stalemate!  You both keep your cards.")
                 card_to_back(dealer_played,"dealer")
                 card_to_back(player_played,"player")
             time.sleep(2)
