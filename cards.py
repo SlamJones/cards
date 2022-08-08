@@ -194,11 +194,10 @@ def hand_value(who,gametype):
     if who == "player":
         for card in player_hand:
             total += card_value(card,total,gametype)
-        return(total)
     elif who == "dealer":
         for card in dealer_hand:
             total += card_value(card,total,gametype)
-        return(total)
+    return(total)
             
 
     
@@ -207,6 +206,7 @@ def card_value(card,total,gametype):
     card_no = card_parts[0]
     if card_no.isdigit():
         value = int(card_no)
+        return(value)
     if gametype == "blackjack":
         if card_no == "Ace":
             if total >= 11:
@@ -215,6 +215,7 @@ def card_value(card,total,gametype):
                 value = 11
         else:
             value = 10
+        return(value)
     elif gametype == "war":
         if card_no == "Ace":
             value = 14
@@ -283,11 +284,11 @@ def play_war():
                 print("\nOn table:")
                 for card in on_table:
                     print(str(card))
-            time.sleep(1.2)
+            time.sleep(0.25)
             player_played = player_hand[0]
             dealer_played = dealer_hand[0]
             print("\nPlayer: {}\nDealer: {}\n".format(player_played,dealer_played))
-            time.sleep(0.85)
+            time.sleep(0.25)
             player_value = card_value(player_played,0,"war")
             dealer_value = card_value(dealer_played,0,"war")
             if player_value > dealer_value:
@@ -319,14 +320,14 @@ def play_war():
                 #print("Stalemate!  You both keep your cards.")
                 card_to_back(dealer_played,"dealer")
                 card_to_back(player_played,"player")
-            time.sleep(2)
+            time.sleep(1)
             clearscreen()
             rounds += 1
         if len(player_hand) > 0:
-            print("Player wins!")
+            print("Player wins after {} rounds!".format(str(rounds)))
         elif len(dealer_hand) > 0:
-            print("Dealer wins!")
-        time.sleep(2)
+            print("Dealer wins after {} rounds!".format(str(rounds)))
+        time.sleep(2.5)
     except KeyboardInterrupt:
         clearscreen()
         print("Exiting War...\n\nThanks for playing!")
